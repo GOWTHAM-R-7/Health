@@ -1,0 +1,159 @@
+
+package com.example.mobilehealthapp;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.lang.reflect.Member;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity {
+private TextView sugar,bronch,ch,hypox,asth;
+private Button submit;
+private FirebaseDatabase db=FirebaseDatabase.getInstance();
+private DatabaseReference reff=db.getReference().child("users");
+private EditText textsugar,textbronchi,textchd,texthypoxemia,textasthma;
+Member member;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        sugar=findViewById(R.id.view1);
+        bronch=findViewById(R.id.view2);
+        ch=findViewById(R.id.view3);
+        hypox=findViewById(R.id.view4);
+        asth=findViewById(R.id.view5);
+        submit = findViewById(R.id.button);
+        textsugar=findViewById(R.id.sugarview);
+        textbronchi=findViewById(R.id.bronchiview);
+        textchd=findViewById(R.id.chdview);
+        texthypoxemia=findViewById(R.id.hypoxemiaview);
+        textasthma=findViewById(R.id.asthmaview);
+
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                String svalue=textsugar.getText().toString();
+                String bvalue=textbronchi.getText().toString();
+                String cvalue=textchd.getText().toString();
+                String hvalue=texthypoxemia.getText().toString();
+                String avalue=textasthma.getText().toString();
+                String a,b,c,d,e;
+
+
+                //for checking Hypoxemia
+
+                int beta = Integer.parseInt(texthypoxemia.getText().toString());
+                if(beta <=96 && beta<=98){
+                    hypox.setText("Normal");
+                    hypox.setTextColor(Color.GREEN);
+                    d="Normal";
+                }
+                else{
+                    hypox.setText("HYPOXEMIA");
+                    hypox.setTextColor(Color.RED);
+                    d="Hypoxemia";
+                }
+
+
+                //for CHD
+
+
+               int theta= Integer.parseInt(textchd.getText().toString());
+               // Random random = new Random();
+               // int ran=random.nextInt(125 - 75 );
+                if((theta >120) ){
+                    ch.setText("CHD confirmed");
+                    ch.setTextColor(Color.RED);
+                    c="CHD";
+
+                }else{
+                    ch.setText("SAFE");
+                    ch.setTextColor(Color.GREEN);
+                    c="SAFE";
+                }
+
+                //for bronchiectasis
+                int omega =Integer.parseInt(textbronchi.getText().toString());
+                if(omega > 20  ){
+                    bronch.setText("Lung Problem");
+                    bronch.setTextColor(Color.RED);
+                    b="Lung Problem";
+
+                }
+                else{
+                    bronch.setText("Safe");
+                    bronch.setTextColor(Color.GREEN);
+                    b="Safe";
+                }
+
+                //for asthma
+                int gamma = Integer.parseInt(textasthma.getText().toString());
+                    if((beta >=90 && beta <=95) && (gamma >= 100 && gamma <=125) && (omega > 20)){
+                        asth.setText("ASTHMA");
+                        asth.setTextColor(Color.RED);
+                        e="ASTHMA";
+                    }else{
+                        asth.setText("SAFE");
+                        asth.setTextColor(Color.GREEN);
+                        e="SAFE";
+                    }
+
+
+                //for sugar level
+
+                int alpha = Integer.parseInt(textsugar.getText().toString());
+
+                if(alpha < 140){
+                    sugar.setText("Normal");
+                   sugar.setTextColor(Color.GREEN);
+                   a="Normal";
+
+                }else if(alpha >=140 && alpha <200){
+                    sugar.setText("Prediabetes");
+                    sugar.setTextColor(Color.BLUE);
+                    a="PreDiabetes";
+                }else{
+                    sugar.setText("Diabetes");
+                    sugar.setTextColor(Color.RED);
+                    a="Diabetes";
+                }
+
+                ///////////////////////////////////////////////////
+
+
+                reff.child(" Suagr-mg per dl").setValue(svalue);
+                reff.child("Breaths per Minute").setValue(bvalue);
+                reff.child("Systolic BP").setValue(cvalue);
+                reff.child("Oxygen Saturation Rate").setValue(hvalue);
+                reff.child("Pulse per Minute").setValue(avalue);
+                reff.child("RESULTS").setValue("RECORDS");
+                reff.child("SUGAR").setValue(a);
+                reff.child("BRONCHIECTASIS").setValue(b);
+                reff.child("CHD").setValue(c);
+                reff.child("HYPOXEMIA").setValue(d);
+                reff.child("ASTHMA").setValue(e);
+
+                Toast.makeText(MainActivity.this, "SUCCESSFULLY SAVED THE DATA IN DATABASE", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        }
+
+    }
