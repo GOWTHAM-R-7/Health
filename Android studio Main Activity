@@ -59,7 +59,7 @@ Member member;
                 //for checking Hypoxemia
 
                 int beta = Integer.parseInt(texthypoxemia.getText().toString());
-                if(beta <=96 && beta<=98){
+                if(beta >=96 && beta<=98){
                     hypox.setText("Normal");
                     hypox.setTextColor(Color.GREEN);
                     d="Normal";
